@@ -12,6 +12,24 @@ clientes_cadastrados = []
 contas_cadastradas = []
 
 
+def validar_quantia(msg):
+    validacao = False
+    valor_verificado = ""
+
+    while True:
+        valor_entrada = input(msg).strip()
+
+        if "." in valor_entrada or "," in valor_entrada:
+            valor_verificado = valor_entrada.replace(".", "").replace(",", "")
+
+        if (valor_verificado.isdigit() or valor_entrada.isdigit()) and (valor_verificado > "0" or valor_entrada > "0"):
+            validacao = True
+        else:
+            print(f"{ERRORINIT}ERRO! Houve um problema ao tentar realizar a operação! Digite uma quantia válida.!{ERROREND}")
+
+        if validacao:
+            return valor_entrada.replace(",", ".")
+
 def id_generator():
     ids = len(clientes_cadastrados)
     return ids + 1
@@ -115,7 +133,9 @@ class Operacao:
 
     def deposito():
         cliente = usuario()
-        cliente
+
+        transacao = Deposito()
+        cliente.realizar_transacao()
 
     def sacar():
         cliente = usuario()
@@ -124,29 +144,26 @@ class Operacao:
         cliente = usuario()
 
         if cliente:
-            print(f"{' CONTAS '.center(30, '=')}")      
+            print(f"{' CONTAS '.center(30, '=')}")       
             for conta in cliente.contas:
                 print(conta)
             print(f"{'='*30}")
 
-            contas_cliente = [type(conta.numero) for conta in cliente.contas]
-            print(contas_cliente)
+
+            contas_cliente = [conta.numero for conta in cliente.contas]
+            conta_final  = cliente.contas[0]
+
             if len(cliente.contas) > 1:
   
-                conta_escolhida = input("Escolha o número da conta que deseja realizar a transação: ")
+                conta_escolhida = int(input("Escolha o número da conta que deseja realizar a transação: "))
 
-                if conta_escolhida in contas_cliente:
+                if conta_escolhida not in contas_cliente:
                     print(f"{ERRORINIT}Conta inexistente!{ERROREND}")
                     return
                 else:
-                    idx = contas_cliente.index(conta_escolhida)
-                    print(idx)
-
-
-
-
-
-
+                    conta_final =  cliente.contas[contas_cliente.index(conta_escolhida)]
+                
+            print(conta_final.historico)
 
         return
 
