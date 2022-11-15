@@ -14,10 +14,10 @@ msg_menu = f"""
 [1]\tDepositar
 [2]\tSacar
 [3]\tConsultar extrato
-[4]\tNova conta
-[5]\tListar contas
-[6]\tNovo usuário
-[X]\tEncerrar programa
+{SUCESSINIT}[4]\tNova conta{SUCESSEND}
+{SUCESSINIT}[5]\tListar contas{SUCESSEND}
+{SUCESSINIT}[6]\tNovo usuário{SUCESSEND}
+{SUCESSINIT}[X]\tEncerrar programa{SUCESSEND}
 """
 
 def cadastro():

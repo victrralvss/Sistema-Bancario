@@ -25,6 +25,10 @@ class PessoaFisica(Cliente):
         self._idade = idade
         self.contas = []
 
+    @classmethod
+    def fromDataNascimento(cls, cpf, nome, ano_nascimento):
+        return cls(cpf, nome, date.today().year - ano_nascimento)
+
     @property
     def cpf(self):
         return self._cpf
@@ -36,14 +40,11 @@ class PessoaFisica(Cliente):
     @property
     def idade(self):
         return self._idade
-
-    @classmethod
-    def fromDataNascimento(cls, cpf, nome, ano_nascimento):
-        return cls(cpf, nome, date.today().year - ano_nascimento)
-
+    
     def adicionar_conta(self, conta):
         return super().adicionar_conta(conta)
         
+
     def __str__(self):
         return f"CLASSE : {self.__class__.__name__} | {' | '.join([f'{k} : {v}' for k, v in self.__dict__.items()])}"
 
