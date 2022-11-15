@@ -12,6 +12,24 @@ clientes_cadastrados = []
 contas_cadastradas = []
 
 
+def validar_quantia(msg):
+    validacao = False
+    valor_verificado = ""
+
+    while True:
+        valor_entrada = input(msg).strip()
+
+        if "." in valor_entrada or "," in valor_entrada:
+            valor_verificado = valor_entrada.replace(".", "").replace(",", "")
+
+        if (valor_verificado.isdigit() or valor_entrada.isdigit()) and (valor_verificado > "0" or valor_entrada > "0"):
+            validacao = True
+        else:
+            print(f"{ERRORINIT}ERRO! Houve um problema ao tentar realizar a operação! Digite uma quantia válida.!{ERROREND}")
+
+        if validacao:
+            return valor_entrada.replace(",", ".")
+
 def id_generator():
     ids = len(clientes_cadastrados)
     return ids + 1
@@ -47,18 +65,6 @@ def get_client(cpf_cliente):
                 if cpf == cpf_cliente:
                     return registro_cliente
 
-def listar(cliente):
-
-    lista = f"""
-{' PERFIL '.center(30, '=')}
-Nome:\t{cliente.nome}\t{cliente.idade} anos
-CPF:\t{cliente.cpf}
-Endereço: {cliente.endereco.numero}, rua{cliente.endereco.rua}, {cliente.endereco.bairro}\t{cliente.endereco.cidade}/{cliente.endereco.estado}
-
-{' CONTAS '.center(30, '=')}
-
-"""
-
 def registrar_endereco(cpf_cliente):
 
     cliente = get_client(cpf_cliente)
@@ -86,14 +92,14 @@ def registrar_endereco(cpf_cliente):
 
     while True: #validando cidade
         cidade = input("Digite o seu cidade: ").strip()
-        if cidade and cidade.isalpha():
+        if cidade and cidade.replace(' ', '').isalpha():
             break
         else:
             print(f"{ERRORINIT}Por favor, insira uma cidade válida{ERROREND}")
 
     while True: #validando estado
         estado = input("Digite o seu estado: ").strip()
-        if estado and estado.isalpha():
+        if estado and estado.replace(' ', '').isalpha():
             break
         else:
             print(f"{ERRORINIT}Por favor, insira um estado válido{ERROREND}")
@@ -109,46 +115,62 @@ def usuario():
         print(f"{ERRORINIT}Sem registro de CPF{ERROREND}")
         return False
 
+def get_conta(cliente):
+
+    contas_cliente = [conta.numero for conta in cliente.contas]
+    conta_final  = cliente.contas[0]
+
+    if len(cliente.contas) > 1:
+
+        conta_escolhida = int(input("Escolha o número da conta que deseja realizar a transação\nCONTA > "))
+
+        if conta_escolhida not in contas_cliente:
+            print(f"{ERRORINIT}Conta inexistente!{ERROREND}")
+            return
+        else:
+            conta_final =  cliente.contas[contas_cliente.index(conta_escolhida)]
+
+    return conta_final
+
+
+
 
 class Operacao:
     pass
 
     def deposito():
         cliente = usuario()
-        cliente
+        if len(cliente.contas) >= 1:
+            conta = get_conta(cliente)
+            valor_deposito = validar_quantia("Digite a quantia que deseja depositar > R$ ")
+            transacao = Deposito(valor_deposito)
+            cliente.realizar_transacao(conta, transacao)
+            
+
+        else:
+            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+            return
 
     def sacar():
         cliente = usuario()
+        if len(cliente.contas) >= 1:
+            conta = get_conta(cliente)
+            transacao = Saque()
+            cliente.realizar_transacao()
+        else:
+            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+            return
 
     def consultar_extrato():
         cliente = usuario()
 
-        if cliente:
-            print(f"{' CONTAS '.center(30, '=')}")      
-            for conta in cliente.contas:
-                print(conta)
-            print(f"{'='*30}")
-
-            contas_cliente = [type(conta.numero) for conta in cliente.contas]
-            print(contas_cliente)
-            if len(cliente.contas) > 1:
-  
-                conta_escolhida = input("Escolha o número da conta que deseja realizar a transação: ")
-
-                if conta_escolhida in contas_cliente:
-                    print(f"{ERRORINIT}Conta inexistente!{ERROREND}")
-                    return
-                else:
-                    idx = contas_cliente.index(conta_escolhida)
-                    print(idx)
-
-
-
-
-
-
-
-        return
+        if len(cliente.contas) >= 1:
+            conta = get_conta(cliente)
+            print(conta.historico)
+        
+        else:
+            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+            return
 
     def criar_conta():
 
@@ -161,15 +183,18 @@ class Operacao:
                     cliente.adicionar_conta(conta)
                     contas_cadastradas.append(conta)
                     print(f"{SUCESSINIT}CONTA CADASTRADA COM SUCESSO!{SUCESSEND}")
-
                     
     def listar_contas():
 
         cliente = usuario()
-    
-        for conta in cliente.contas:
-            print(conta)
-
+        if len(cliente.contas) >= 1: 
+            print(f"\n{' CONTAS '.center(30, '=')}\n")
+            for conta in cliente.contas:
+                print(conta)
+            print('='*30)
+        else:
+            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+            return
     
     def novo_usuario():
 
