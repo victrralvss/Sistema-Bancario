@@ -81,8 +81,8 @@ class ContaCorrente(Conta):
 
     def sacar(self, valor):
 
-        movimeto = [saque for saque in self.historico.transacoes if saque.get("operação") == valor.__class__.__name__]
-        
+        movimeto = [mov for mov in self.historico.transacoes if mov.get("operação") == "Saque"]
+
         if valor > self._limite:
             print(f"{ERRORINIT}Saque não realizado! O seu limite de saque é R$ {self._limite},00{ERROREND}")
             return False

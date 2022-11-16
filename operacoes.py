@@ -176,13 +176,16 @@ class Operacao:
         if cliente:
             if len(cliente.contas) >= 1:
                 conta = get_conta(cliente)
-                extrato = conta.historico.transacoes
+                extrato = conta.historico.transacoes                    
 
                 print(f"{' EXTRATO '.center(30, '=')}")
-                for movimento in extrato:
-                    print(f"\n{movimento.get('data')}")
-                    print(f"\tOPERAÇÃO: {movimento.get('operação')}")
-                    print(f"\tVALOR: R$ {movimento.get('valor')}")
+                if len(extrato) > 0:            
+                    for movimento in extrato:
+                        print(f"\n{movimento.get('data')}")
+                        print(f"\tOPERAÇÃO: {movimento.get('operação')}")
+                        print(f"\tVALOR: R$ {movimento.get('valor')}")
+                else:
+                    print(f"{ERRORINIT}SEM MOVIMENTAÇÃO REGISTRADA{ERROREND}")
                 print(f"\nSALDO:\tR$ {SUCESSINIT}{conta.saldo}{SUCESSEND}")
         else: 
             print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
