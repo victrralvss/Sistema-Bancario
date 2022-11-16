@@ -11,8 +11,7 @@ class Cliente:
         self.contas = []
 
     def realizar_transacao(self, conta, transacao):
-        pass
-
+        transacao.registrar(conta)
 
     def adicionar_conta(self, conta):
         self.contas.append(conta)
@@ -60,3 +59,5 @@ class Endereco:
     def __str__(self):
         return f"CLASSE : {self.__class__.__name__} | {' | '.join([f'{k} : {v}' for k, v in self.__dict__.items()])}"
 
+p1 = PessoaFisica(12, 'sdasdasd', 22)
+print(p1)

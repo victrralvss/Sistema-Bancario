@@ -3,14 +3,16 @@ from cliente import *
 from conta import *
 from transacao import *
 
+
 SUCESSINIT = '\033[32m'
-SUCESSEND = '\033[0;0m'
+SUCESSEND =' \033[0;0m'
 ERRORINIT = '\033[0;31m'
-ERROREND = '\033[m'
+ERROREND =' \033[m'
 
 clientes_cadastrados = []
 contas_cadastradas = []
 
+c1 = PessoaFisica(122, "1212", 22)
 
 def validar_quantia(msg):
     validacao = False
@@ -22,13 +24,13 @@ def validar_quantia(msg):
         if "." in valor_entrada or "," in valor_entrada:
             valor_verificado = valor_entrada.replace(".", "").replace(",", "")
 
-        if (valor_verificado.isdigit() or valor_entrada.isdigit()) and (valor_verificado > "0" or valor_entrada > "0"):
+        if (valor_verificado.isdigit() or valor_entrada.isdigit()):
             validacao = True
         else:
             print(f"{ERRORINIT}ERRO! Houve um problema ao tentar realizar a operação! Digite uma quantia válida.!{ERROREND}")
 
         if validacao:
-            return valor_entrada.replace(",", ".")
+            return float(valor_entrada.replace(",", "."))
 
 def id_generator():
     ids = len(clientes_cadastrados)
@@ -51,13 +53,13 @@ def cpf_existe(cpf_user):
 
 def validando_reposta(msg):
     while True:
-        cliente = input(msg).strip().lower()
-        if cliente.startswith('s') or cliente.startswith('n'):
+        resposta = input(msg).strip().lower()
+        if resposta.startswith('s') or resposta.startswith('n'):
             break
         else:
             print(f"{ERRORINIT}Por favor, digite uma opção válida!{ERROREND}")
             
-    return True if cliente.startswith('s') else False
+    return True if resposta.startswith('s') else False
 
 def get_client(cpf_cliente):
     for cliente in clientes_cadastrados:
@@ -122,6 +124,10 @@ def get_conta(cliente):
 
     if len(cliente.contas) > 1:
 
+        print(f"\n{' CONTAS '.center(30, '=')}\n")
+        for conta in cliente.contas:
+            print(conta)
+        print(f"\n{'='*30}\n")
         conta_escolhida = int(input("Escolha o número da conta que deseja realizar a transação\nCONTA > "))
 
         if conta_escolhida not in contas_cliente:
@@ -140,35 +146,45 @@ class Operacao:
 
     def deposito():
         cliente = usuario()
-        if len(cliente.contas) >= 1:
-            conta = get_conta(cliente)
-            valor_deposito = validar_quantia("Digite a quantia que deseja depositar > R$ ")
-            transacao = Deposito(valor_deposito)
-            cliente.realizar_transacao(conta, transacao)
-            
-
-        else:
-            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
-            return
+        if cliente:
+            if len(cliente.contas) >= 1:
+                conta = get_conta(cliente)
+                valor_deposito = validar_quantia("Digite a quantia que deseja depositar > R$ ")
+                transacao = Deposito(valor_deposito)
+                cliente.realizar_transacao(conta, transacao)
+                    
+            else:
+                print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+                return
 
     def sacar():
         cliente = usuario()
-        if len(cliente.contas) >= 1:
-            conta = get_conta(cliente)
-            transacao = Saque()
-            cliente.realizar_transacao()
-        else:
-            print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
-            return
+
+        if cliente:
+            if len(cliente.contas) >= 1:
+                conta = get_conta(cliente)
+                valor_saque = validar_quantia("Digite a quantia que deseja sacar > R$ ")
+                transacao = Saque(valor_saque)
+                if cliente.realizar_transacao(conta, transacao):
+                    print(f"{SUCESSINIT}SAQUE REALIZADO COM SUCESSO!{SUCESSEND}")
+            else:
+                print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
+                return
 
     def consultar_extrato():
         cliente = usuario()
+        if cliente:
+            if len(cliente.contas) >= 1:
+                conta = get_conta(cliente)
+                extrato = conta.historico.transacoes
 
-        if len(cliente.contas) >= 1:
-            conta = get_conta(cliente)
-            print(conta.historico)
-        
-        else:
+                print(f"{' EXTRATO '.center(30, '=')}")
+                for movimento in extrato:
+                    print(f"\n{movimento.get('data')}")
+                    print(f"\tOPERAÇÃO: {movimento.get('operação')}")
+                    print(f"\tVALOR: R$ {movimento.get('valor')}")
+                print(f"\nSALDO:\tR$ {SUCESSINIT}{conta.saldo}{SUCESSEND}")
+        else: 
             print(f"{ERRORINIT}O CPF informado ainda não registrou nenhuma conta no nosso banco!{ERROREND}")
             return
 
@@ -207,7 +223,6 @@ class Operacao:
         cpf = ""
         nome = ""
         idade = ""
-        client_id = id_generator()
 
         while True: #VALIDAÇÃO CPF
             
@@ -244,8 +259,8 @@ class Operacao:
             else:
                 print(f"{ERRORINIT}Por favor, insira uma idade válida{ERROREND}")
 
-        client_id = PessoaFisica(cpf, nome, idade)
-        clientes_cadastrados.append({client_id.cpf : client_id})
+        cliente = PessoaFisica(cpf, nome, idade)
+        clientes_cadastrados.append({cliente.cpf : cliente})
 
         if validando_reposta("\nGostaria de cadastrar seu endereço?\n[S] - SIM\t[N] - NÃO\n\n> "):
             registrar_endereco(cpf)
