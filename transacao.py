@@ -1,5 +1,6 @@
 #INTERFACE
 from abc import ABC, abstractmethod, abstractproperty
+from conta import Historico
 class Transacao(ABC):
     
     @property
@@ -22,8 +23,10 @@ class Deposito(Transacao):
         return self._valor
 
     def registrar(self, conta):
-        pass
-        
+        if conta.depositar(self.valor):
+            conta.historico.adicionar_transacao(self)
+            
+
 
 class Saque(Transacao):
 
@@ -34,6 +37,7 @@ class Saque(Transacao):
     def valor(self):
         return self._valor
 
-    def registrar():
-        pass
-
+    def registrar(self, conta):
+        if conta.sacar(self.valor):
+            conta.historico.adicionar_transacao(self)
+            

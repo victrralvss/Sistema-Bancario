@@ -1,5 +1,9 @@
-from transacao import Transacao
 from datetime import datetime
+
+SUCESSINIT = '\033[32m'
+SUCESSEND =' \033[0;0m'
+ERRORINIT = '\033[0;31m'
+ERROREND =' \033[m'
 
 class Conta:
 
@@ -16,7 +20,7 @@ class Conta:
 
     @property
     def saldo(self):
-        return self._saldo
+        return f"R$ {float(self._saldo):.2f}"
     
     @property
     def numero(self):
@@ -39,62 +43,82 @@ class Conta:
         saldo = self._saldo
 
         if valor > saldo:
-            print("Saldo insuficiente!")
+            print(f"{ERRORINIT}Saldo insuficiente!{ERROREND}")
             return False
 
         elif valor > 0:
             self._saldo -= valor
+            print(f"{SUCESSINIT}SAQUE REALIZADO COM SUCESSO!{SUCESSEND}")
             return True
 
         else:
-            print("Erro ao tentar realizar o saque, por favor insira um valor válido!")
+            print(f"{ERRORINIT}Erro ao tentar realizar o saque, por favor insira um valor válido!{ERROREND}")
             return False
  
     def depositar(self, valor):
+
         if valor > 0:
             self._saldo += valor
+            print(f"{SUCESSINIT}DEPOSITO REALIZADO COM SUCESSO!{SUCESSEND}")
+            return True
         else:
-            print("Por favor insira apenas valores a cima de R$ 5.00")
+            print(f"{ERRORINIT}Erro na tentativa de deposito!{ERROREND}")
             return False
-        
-        return True
+
         
 
     def __str__(self):
         return f"CLASSE: {self.__class__.__name__} | {' | '.join([f'{k} : {v}' for k, v in self.__dict__.items()])}"
 
-    
-    def adicionar_transacao(self, transacao):
-        self._transacoes.append(
-            {
-                "operação": transacao.__class__.__name__,
-                "valor": transacao.valor,
-                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s")
-            }
-        )
+
 
 class ContaCorrente(Conta):
 
     def __init__(self, numero, cliente, limite = 500, limite_saques = 3):
         super().__init__(numero, cliente)
         self._limite = limite
-        self._limite = limite_saques
+        self._limite_saque = limite_saques
 
     def sacar(self, valor):
+
+        movimeto = [saque for saque in self.historico.transacoes if saque.get("operação") == valor.__class__.__name__]
         
         if valor > self._limite:
-            print(f"Saque não realizado! O seu limite de saquie é R$ {self._limite},00")
+            print(f"{ERRORINIT}Saque não realizado! O seu limite de saque é R$ {self._limite},00{ERROREND}")
             return False
-        
 
+        elif len(movimeto) >= 3:
+            print(f"{ERRORINIT}Você atingiu o seu limite de 3 saques diários!{ERROREND}")
+            return False
+
+        else:
+            print(movimeto)
+            return super().sacar(valor)
+    
 
     def __str__ (self):
         return f"TITULAR:\t{self._cliente.nome}\nC/C:\t\t{self._numero}\nAGENCIA:\t{self._agencia}\n"
 
 
+
 class Historico:
     def __init__(self):
         self._transacoes = []
-    
+
+    @property
+    def transacoes(self):
+        return self._transacoes
+
     def adicionar_transacao(self, transacao):
-        pass
+        self._transacoes.append(
+            {
+                "operação": transacao.__class__.__name__,
+                "valor": transacao.valor,
+                "data": datetime.now().strftime("%d/%m/%Y - %H:%M:%S"),
+                
+            }
+        )
+
+    def __str__(self):
+        return f"{self.__class__.__name__} | {' | '.join([f'{k} : {v}' for k, v in self.__dict__.items()])}"
+        
