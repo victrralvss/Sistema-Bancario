@@ -25,18 +25,27 @@ __[4] CIRAR CONTA__
   * Com um registro no banco, agora é possível criar uma ou mais contas que serão associadas ao seu CPF para futuras consultas
   * Com uma conta criada, as operações de DEPÓSITO | SAQUE | EXTRATO | LISTAR CONTAS estáo disponíveis
   
+  
+        Criada a conta, toda operação a diante irá perguntar o seu CPF e associar a operação com a conta registrada nele
+        caso o CPF informado tenha mais de uma conta, uma lista com suas respectivas contas irá aparecer e o usuário deverá
+        inseir o número da conta que ele deseja operar. Caso o CPF informado não esteja registrado ou 
+        ainda não tenha uma conta associada e ele, a operação é cancelada
+        
+  
 __[5 LISTAR CONTA__
-  * Caso o CPF informado não esteja registrado ou ainda não tenha uma conta associada e ele, a operação é cancelada
-  * Caso mais de uma conta esteja associada ao CPF informado, uma lita com as suas contas será apresentada e o cliente poderá escolher o número da que deseja operar
   * Você pode consultar todas as contas associadas ao seu CPF aqui
   * Não há limite de contas
     
 __[1] DEPÓSITO__ 
-  * Caso o CPF informado não esteja registrado ou ainda não tenha uma conta associada e ele, a operação é cancelada
-  * Caso mais de uma conta esteja associada ao CPF informado, uma lita com as suas contas será apresentada e o cliente poderá escolher o número da que deseja operar
   * Validada a conta, será necessário informar o valor do depósito
+  * O valor informado será adcionado a conta 
 
 __[2] SAQUE__
-  * Caso o CPF informado não esteja registrado ou ainda não tenha uma conta associada e ele, a operação é cancelada
-  * Caso mais de uma conta esteja associada ao CPF informado, uma lita com as suas contas será apresentada e o cliente poderá escolher o número da que deseja operar
+  * Validada a conta, será necessário informar o valor de saque
+  * O valor limite de saque é de R$ 500
+  * Uma conta só pode registrar no máximo 3 saques
+  * Caso o valor de saque esteja dispónivel na conta do cliente, o valor é debitado
+  
+__[3] CONSULAR EXTRATO__
+  * Um extrato apresentando todas as transações da conta informada e o seu saldo atual é apresentado ao cliente
  
