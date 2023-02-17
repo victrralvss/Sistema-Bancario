@@ -32,7 +32,7 @@ __[4] CIRAR CONTA__
         ainda não tenha uma conta associada e ele, a operação é cancelada
         
   
-__[5 LISTAR CONTA__
+__[5] LISTAR CONTA__
   * Você pode consultar todas as contas associadas ao seu CPF aqui
   * Não há limite de contas
     
